@@ -138,7 +138,7 @@ fn main() {
         response_type: Some(ResponseType::CodeId),
     };
 
-    let url = apple_auth::url::authorize_url(config);
+    let url = apple::url::authorize_url(config);
     println!("Authorization URL: {}", url);
 }
 ```
