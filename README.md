@@ -16,7 +16,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-apple = "0.1.0"
+apple = "0.1.1"
 ```
 
 Ensure you have the required dependencies installed. The library depends on:
