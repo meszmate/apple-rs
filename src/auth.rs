@@ -14,13 +14,13 @@ struct AppleErrorResponseBody {
 }
 
 pub trait AppleAuth {
-    fn validate_code(&self, code: &str) -> Result<TokenResponse, AppleError>;
-    fn validate_code_with_redirect_uri(
+    async fn validate_code(&self, code: &str) -> Result<TokenResponse, AppleError>;
+    async fn validate_code_with_redirect_uri(
         &self,
         code: &str,
         redirect_uri: &str,
     ) -> Result<TokenResponse, AppleError>;
-    fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError>;
+    async fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError>;
 }
 
 pub struct AppleAuthImpl {
@@ -132,7 +132,7 @@ impl AppleAuthImpl {
 }
 
 impl AppleAuth for AppleAuthImpl {
-    fn validate_code(&self, code: &str) -> Result<TokenResponse, AppleError> {
+    async fn validate_code(&self, code: &str) -> Result<TokenResponse, AppleError> {
         let client_secret = self.client_secret()?;
         let form_query = vec![
             ("client_id", self.app_id.as_str()),
@@ -140,10 +140,10 @@ impl AppleAuth for AppleAuthImpl {
             ("code", code),
             ("grant_type", "authorization_code"),
         ];
-        futures::executor::block_on(self.validate_request(form_query))
+        self.validate_request(form_query).await
     }
 
-    fn validate_code_with_redirect_uri(
+    async fn validate_code_with_redirect_uri(
         &self,
         code: &str,
         redirect_uri: &str,
@@ -156,10 +156,10 @@ impl AppleAuth for AppleAuthImpl {
             ("grant_type", "authorization_code"),
             ("redirect_uri", redirect_uri),
         ];
-        futures::executor::block_on(self.validate_request(form_query))
+        self.validate_request(form_query).await
     }
 
-    fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError> {
+    async fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError> {
         let client_secret = self.client_secret()?;
         let form_query = vec![
             ("client_id", self.app_id.as_str()),
@@ -167,7 +167,7 @@ impl AppleAuth for AppleAuthImpl {
             ("refresh_token", refresh_token),
             ("grant_type", "refresh_token"),
         ];
-        futures::executor::block_on(self.validate_request(form_query))
+        self.validate_request(form_query).await
     }
 }
 
