@@ -14,13 +14,13 @@ struct AppleErrorResponseBody {
 }
 
 pub trait AppleAuth {
-    async fn validate_code(&self, code: &str) -> Result<TokenResponse, AppleError>;
-    async fn validate_code_with_redirect_uri(
+    fn validate_code(&self, code: &str) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
+    fn validate_code_with_redirect_uri(
         &self,
         code: &str,
         redirect_uri: &str,
-    ) -> Result<TokenResponse, AppleError>;
-    async fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError>;
+    ) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
+    fn validate_refresh_token(&self, refresh_token: &str) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
 }
 
 pub struct AppleAuthImpl {
