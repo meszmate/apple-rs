@@ -174,7 +174,7 @@ fn main() {
 # Notes
 
 - **JWT Validation**: The get_user_info_from_id_token function does not validate the JWT signature for simplicity. In a production environment, you should validate the signature using Apple's public keys.
-- **Async/Sync**: The library uses asynchronous calls for compatibility with most of the web frameworks. For sync usage, consider modifying the AppleAuth trait to use async methods.
+- **Async/Sync**: The library uses asynchronous calls for compatibility with most of the web frameworks. For sync usage, consider modifying the AppleAuth trait to use sync methods.
 - **Security**: Store private keys and tokens securely. Avoid hardcoding sensitive information in your code.
 
 # License
