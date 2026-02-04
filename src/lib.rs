@@ -1,9 +1,17 @@
 use serde::{Deserialize, Serialize};
 
-pub mod auth;
 pub mod error;
+pub mod signing;
+
+#[cfg(feature = "auth")]
+pub mod auth;
+#[cfg(feature = "auth")]
 pub mod url;
+#[cfg(feature = "auth")]
 pub mod user;
+
+#[cfg(feature = "cloudkit")]
+pub mod cloudkit;
 
 #[derive(Serialize, Deserialize)]
 pub struct TokenResponse {
