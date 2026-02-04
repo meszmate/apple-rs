@@ -1,8 +1,11 @@
-use crate::{error::*, TokenResponse};
+use crate::error::*;
+use crate::signing::AppleKeyPair;
+use crate::TokenResponse;
 use jsonwebtoken::{encode, EncodingKey, Header};
-use p256::ecdsa::SigningKey;
+use p256::pkcs8::EncodePrivateKey;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const VALIDATION_ENDPOINT: &str = "https://appleid.apple.com/auth/token";
@@ -26,19 +29,17 @@ pub trait AppleAuth {
 pub struct AppleAuthImpl {
     app_id: String,
     team_id: String,
-    key_id: String,
-    key_content: Vec<u8>,
+    key_pair: Arc<AppleKeyPair>,
     http_client: Client,
 }
 
 impl AppleAuthImpl {
     pub fn new(app_id: &str, team_id: &str, key_id: &str, key_path: &str) -> Result<Self, AppleError> {
-        let key_content = std::fs::read(key_path).map_err(|e| AppleError::IoError(e.to_string()))?;
+        let key_pair = AppleKeyPair::from_file(key_id, key_path)?;
         Ok(AppleAuthImpl {
             app_id: app_id.to_string(),
             team_id: team_id.to_string(),
-            key_id: key_id.to_string(),
-            key_content,
+            key_pair,
             http_client: Client::builder()
                 .timeout(Duration::from_secs(10))
                 .build()
@@ -47,12 +48,11 @@ impl AppleAuthImpl {
     }
 
     pub fn new_b64(app_id: &str, team_id: &str, key_id: &str, b64: &str) -> Result<Self, AppleError> {
-        let key_content = base64::decode(b64).map_err(|e| AppleError::Base64Error(e.to_string()))?;
+        let key_pair = AppleKeyPair::from_base64(key_id, b64)?;
         Ok(AppleAuthImpl {
             app_id: app_id.to_string(),
             team_id: team_id.to_string(),
-            key_id: key_id.to_string(),
-            key_content,
+            key_pair,
             http_client: Client::builder()
                 .timeout(Duration::from_secs(10))
                 .build()
@@ -60,15 +60,23 @@ impl AppleAuthImpl {
         })
     }
 
-    fn parse_private_key(&self) -> Result<SigningKey, AppleError> {
-        let pem = pem::parse(&self.key_content).map_err(|e| AppleError::PemError(e.to_string()))?;
-        let private_key = SigningKey::from_bytes(&pem.contents)
-            .map_err(|e| AppleError::KeyParseError(e.to_string()))?;
-        Ok(private_key)
+    pub fn from_key_pair(app_id: &str, team_id: &str, key_pair: Arc<AppleKeyPair>) -> Result<Self, AppleError> {
+        Ok(AppleAuthImpl {
+            app_id: app_id.to_string(),
+            team_id: team_id.to_string(),
+            key_pair,
+            http_client: Client::builder()
+                .timeout(Duration::from_secs(10))
+                .build()
+                .map_err(|e| AppleError::HttpError(e.to_string()))?,
+        })
+    }
+
+    pub fn key_pair(&self) -> &Arc<AppleKeyPair> {
+        &self.key_pair
     }
 
     fn client_secret(&self) -> Result<String, AppleError> {
-        let private_key = self.parse_private_key()?;
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map_err(|e| AppleError::TimeError(e.to_string()))?
@@ -83,12 +91,15 @@ impl AppleAuthImpl {
         };
 
         let mut header = Header::new(jsonwebtoken::Algorithm::ES256);
-        header.kid = Some(self.key_id.clone());
+        header.kid = Some(self.key_pair.key_id().to_string());
+
+        let der = self.key_pair.signing_key().to_pkcs8_der()
+            .map_err(|e: p256::pkcs8::Error| AppleError::KeyParseError(e.to_string()))?;
 
         let token = encode(
             &header,
             &claims,
-            &EncodingKey::from_ec_der(&private_key.to_bytes()),
+            &EncodingKey::from_ec_der(der.as_bytes()),
         )
             .map_err(|e| AppleError::JwtError(e.to_string()))?;
 

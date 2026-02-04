@@ -12,6 +12,10 @@ pub enum AppleError {
     TimeError(String),
     UnrecognizedError(String),
     ResponseError(ErrorResponse),
+    #[cfg(feature = "cloudkit")]
+    CloudKitError(CloudKitErrorResponse),
+    #[cfg(feature = "cloudkit")]
+    SignatureError(String),
 }
 
 #[derive(Debug, Clone)]
@@ -60,6 +64,82 @@ pub const ERROR_RESPONSE_INVALID_SCOPE: AppleError = AppleError::ResponseError(E
     message: "The requested scope is invalid.",
 });
 
+#[cfg(feature = "cloudkit")]
+#[derive(Debug, Clone)]
+pub struct CloudKitErrorResponse {
+    pub server_error_code: CloudKitErrorCode,
+    pub reason: String,
+    pub uuid: Option<String>,
+    pub retry_after: Option<u64>,
+}
+
+#[cfg(feature = "cloudkit")]
+#[derive(Debug, Clone, PartialEq)]
+pub enum CloudKitErrorCode {
+    BadRequest,
+    AuthenticationFailed,
+    AccessDenied,
+    NotFound,
+    ZoneNotFound,
+    Conflict,
+    Exists,
+    QuotaExceeded,
+    AuthenticationRequired,
+    Throttled,
+    InternalError,
+    TryAgainLater,
+    Unknown(String),
+}
+
+#[cfg(feature = "cloudkit")]
+impl fmt::Display for CloudKitErrorCode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CloudKitErrorCode::BadRequest => write!(f, "BAD_REQUEST"),
+            CloudKitErrorCode::AuthenticationFailed => write!(f, "AUTHENTICATION_FAILED"),
+            CloudKitErrorCode::AccessDenied => write!(f, "ACCESS_DENIED"),
+            CloudKitErrorCode::NotFound => write!(f, "NOT_FOUND"),
+            CloudKitErrorCode::ZoneNotFound => write!(f, "ZONE_NOT_FOUND"),
+            CloudKitErrorCode::Conflict => write!(f, "CONFLICT"),
+            CloudKitErrorCode::Exists => write!(f, "EXISTS"),
+            CloudKitErrorCode::QuotaExceeded => write!(f, "QUOTA_EXCEEDED"),
+            CloudKitErrorCode::AuthenticationRequired => write!(f, "AUTHENTICATION_REQUIRED"),
+            CloudKitErrorCode::Throttled => write!(f, "THROTTLED"),
+            CloudKitErrorCode::InternalError => write!(f, "INTERNAL_ERROR"),
+            CloudKitErrorCode::TryAgainLater => write!(f, "TRY_AGAIN_LATER"),
+            CloudKitErrorCode::Unknown(code) => write!(f, "{}", code),
+        }
+    }
+}
+
+#[cfg(feature = "cloudkit")]
+impl CloudKitErrorCode {
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "BAD_REQUEST" => CloudKitErrorCode::BadRequest,
+            "AUTHENTICATION_FAILED" => CloudKitErrorCode::AuthenticationFailed,
+            "ACCESS_DENIED" => CloudKitErrorCode::AccessDenied,
+            "NOT_FOUND" => CloudKitErrorCode::NotFound,
+            "ZONE_NOT_FOUND" => CloudKitErrorCode::ZoneNotFound,
+            "CONFLICT" => CloudKitErrorCode::Conflict,
+            "EXISTS" => CloudKitErrorCode::Exists,
+            "QUOTA_EXCEEDED" => CloudKitErrorCode::QuotaExceeded,
+            "AUTHENTICATION_REQUIRED" => CloudKitErrorCode::AuthenticationRequired,
+            "THROTTLED" => CloudKitErrorCode::Throttled,
+            "INTERNAL_ERROR" => CloudKitErrorCode::InternalError,
+            "TRY_AGAIN_LATER" => CloudKitErrorCode::TryAgainLater,
+            other => CloudKitErrorCode::Unknown(other.to_string()),
+        }
+    }
+}
+
+#[cfg(feature = "cloudkit")]
+impl fmt::Display for CloudKitErrorResponse {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "CloudKit error {}: {}", self.server_error_code, self.reason)
+    }
+}
+
 impl fmt::Display for ErrorResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}: {}", self.error_type, self.message)
@@ -92,6 +172,10 @@ impl fmt::Display for AppleError {
             AppleError::TimeError(msg) => write!(f, "Time error: {}", msg),
             AppleError::UnrecognizedError(msg) => write!(f, "Unrecognized error: {}", msg),
             AppleError::ResponseError(err) => write!(f, "{}", err),
+            #[cfg(feature = "cloudkit")]
+            AppleError::CloudKitError(err) => write!(f, "{}", err),
+            #[cfg(feature = "cloudkit")]
+            AppleError::SignatureError(msg) => write!(f, "Signature error: {}", msg),
         }
     }
 }

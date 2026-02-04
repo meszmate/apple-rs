@@ -1,46 +1,37 @@
 use serde::{Deserialize, Serialize};
+use std::fmt;
 use url::Url;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum ResponseMode {
     Query,
     Fragment,
+    #[default]
     FormPost,
 }
 
-impl Default for ResponseMode {
-    fn default() -> Self {
-        ResponseMode::FormPost
-    }
-}
-
-impl ToString for ResponseMode {
-    fn to_string(&self) -> String {
+impl fmt::Display for ResponseMode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ResponseMode::Query => "query".to_string(),
-            ResponseMode::Fragment => "fragment".to_string(),
-            ResponseMode::FormPost => "form_post".to_string(),
+            ResponseMode::Query => write!(f, "query"),
+            ResponseMode::Fragment => write!(f, "fragment"),
+            ResponseMode::FormPost => write!(f, "form_post"),
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum ResponseType {
     Code,
+    #[default]
     CodeId,
 }
 
-impl Default for ResponseType {
-    fn default() -> Self {
-        ResponseType::CodeId
-    }
-}
-
-impl ToString for ResponseType {
-    fn to_string(&self) -> String {
+impl fmt::Display for ResponseType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ResponseType::Code => "code".to_string(),
-            ResponseType::CodeId => "code id_token".to_string(),
+            ResponseType::Code => write!(f, "code"),
+            ResponseType::CodeId => write!(f, "code id_token"),
         }
     }
 }

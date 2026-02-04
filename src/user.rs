@@ -36,7 +36,7 @@ pub fn get_user_info_from_id_token(id_token: &str) -> Result<AppleUser, AppleErr
         .map_err(|e| AppleError::JwtError(e.to_string()))?;
 
     let claims = token.claims;
-    let mut user = AppleUser {
+    let user = AppleUser {
         issuer: claims.iss,
         audience: claims.aud,
         subject: claims.sub,
@@ -57,13 +57,6 @@ pub fn get_user_info_from_id_token(id_token: &str) -> Result<AppleUser, AppleErr
         org_id: claims.org_id,
     };
 
-    if let Some(iat) = user.issued_at {
-        user.issued_at = Some(iat);
-    }
-    if let Some(exp) = user.expiry {
-        user.expiry = Some(exp);
-    }
-
     Ok(user)
 }
 
@@ -71,7 +64,7 @@ fn parse_bool(value: &Option<serde_json::Value>) -> bool {
     match value {
         Some(serde_json::Value::Bool(b)) => *b,
         Some(serde_json::Value::String(s)) => s == "true",
-        Some(serde_json::Value::Number(n)) => n.as_f64().map_or(false, |n| n != 0.0),
+        Some(serde_json::Value::Number(n)) => n.as_f64().is_some_and(|n| n != 0.0),
         _ => false,
     }
 }
