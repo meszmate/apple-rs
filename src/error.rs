@@ -49,15 +49,17 @@ pub const ERROR_RESPONSE_INVALID_GRANT: AppleError = AppleError::ResponseError(E
     message: "The authorization grant or refresh token is invalid, typically due to a mismatched or invalid client identifier, invalid code (expired or previously used authorization code), or invalid refresh token.",
 });
 
-pub const ERROR_RESPONSE_UNAUTHORIZED_CLIENT: AppleError = AppleError::ResponseError(ErrorResponse {
-    error_type: ErrorResponseType::UnauthorizedClient,
-    message: "The client is not authorized to use this authorization grant type.",
-});
+pub const ERROR_RESPONSE_UNAUTHORIZED_CLIENT: AppleError =
+    AppleError::ResponseError(ErrorResponse {
+        error_type: ErrorResponseType::UnauthorizedClient,
+        message: "The client is not authorized to use this authorization grant type.",
+    });
 
-pub const ERROR_RESPONSE_UNSUPPORTED_GRANT_TYPE: AppleError = AppleError::ResponseError(ErrorResponse {
-    error_type: ErrorResponseType::UnsupportedGrantType,
-    message: "The authenticated client is not authorized to use this grant type.",
-});
+pub const ERROR_RESPONSE_UNSUPPORTED_GRANT_TYPE: AppleError =
+    AppleError::ResponseError(ErrorResponse {
+        error_type: ErrorResponseType::UnsupportedGrantType,
+        message: "The authenticated client is not authorized to use this grant type.",
+    });
 
 pub const ERROR_RESPONSE_INVALID_SCOPE: AppleError = AppleError::ResponseError(ErrorResponse {
     error_type: ErrorResponseType::InvalidScope,
@@ -136,7 +138,11 @@ impl CloudKitErrorCode {
 #[cfg(feature = "cloudkit")]
 impl fmt::Display for CloudKitErrorResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "CloudKit error {}: {}", self.server_error_code, self.reason)
+        write!(
+            f,
+            "CloudKit error {}: {}",
+            self.server_error_code, self.reason
+        )
     }
 }
 

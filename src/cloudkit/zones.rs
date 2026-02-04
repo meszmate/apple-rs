@@ -49,20 +49,22 @@ impl CloudKitClient {
         };
 
         let response: ModifyZonesResponse = self.signed_post(&url, &request).await?;
-        response.zones.into_iter().next()
+        response
+            .zones
+            .into_iter()
+            .next()
             .ok_or_else(|| AppleError::JsonError("Empty zone response".to_string()))
     }
 
-    pub async fn delete_zone(
-        &self,
-        db: &DatabaseType,
-        zone_id: ZoneID,
-    ) -> Result<(), AppleError> {
+    pub async fn delete_zone(&self, db: &DatabaseType, zone_id: ZoneID) -> Result<(), AppleError> {
         let url = self.build_url(db, "zones/modify");
         let request = ModifyZonesRequest {
             operations: vec![ZoneOperation {
                 operation_type: "delete".to_string(),
-                zone: ZoneBody { zone_id, atomic: None },
+                zone: ZoneBody {
+                    zone_id,
+                    atomic: None,
+                },
             }],
         };
 
@@ -70,10 +72,7 @@ impl CloudKitClient {
         Ok(())
     }
 
-    pub async fn list_zones(
-        &self,
-        db: &DatabaseType,
-    ) -> Result<Vec<Zone>, AppleError> {
+    pub async fn list_zones(&self, db: &DatabaseType) -> Result<Vec<Zone>, AppleError> {
         let url = self.build_url(db, "zones/list");
 
         #[derive(Serialize)]

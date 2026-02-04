@@ -1,18 +1,18 @@
 #[cfg(feature = "cloudkit")]
 mod cloudkit_client_tests {
     use apple::cloudkit::client::{CloudKitClient, CloudKitConfig};
-    use apple::cloudkit::types::{Environment};
+    use apple::cloudkit::types::Environment;
     use apple::signing::AppleKeyPair;
 
     fn test_pem_bytes() -> Vec<u8> {
         use p256::ecdsa::SigningKey;
 
         let sk = SigningKey::from_slice(&[
-            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-            0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
-            0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
-            0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20,
-        ]).unwrap();
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+            0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c,
+            0x1d, 0x1e, 0x1f, 0x20,
+        ])
+        .unwrap();
 
         let raw_bytes = sk.to_bytes();
         let pem_obj = pem::Pem::new("EC PRIVATE KEY", raw_bytes.as_slice());
@@ -25,7 +25,8 @@ mod cloudkit_client_tests {
             container: "iCloud.com.test.app".to_string(),
             environment: env,
             key_pair: kp,
-        }).unwrap()
+        })
+        .unwrap()
     }
 
     #[test]
@@ -51,13 +52,15 @@ mod cloudkit_client_tests {
             container: "iCloud.com.app.one".to_string(),
             environment: Environment::Development,
             key_pair: kp.clone(),
-        }).unwrap();
+        })
+        .unwrap();
 
         let client2 = CloudKitClient::new(CloudKitConfig {
             container: "iCloud.com.app.two".to_string(),
             environment: Environment::Production,
             key_pair: kp,
-        }).unwrap();
+        })
+        .unwrap();
 
         assert_ne!(client1.config().container, client2.config().container);
         assert_ne!(client1.config().environment, client2.config().environment);
@@ -72,7 +75,8 @@ mod cloudkit_client_tests {
             container: "iCloud.com.test".to_string(),
             environment: Environment::Development,
             key_pair: kp,
-        }).unwrap();
+        })
+        .unwrap();
 
         assert!(std::sync::Arc::ptr_eq(&client.config().key_pair, &kp_clone));
     }

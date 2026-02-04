@@ -1,5 +1,5 @@
 use crate::error::AppleError;
-use jsonwebtoken::{decode, Validation};
+use jsonwebtoken::{Validation, decode};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -33,7 +33,7 @@ pub fn get_user_info_from_id_token(id_token: &str) -> Result<AppleUser, AppleErr
         &jsonwebtoken::DecodingKey::from_secret(&[]), // No validation for simplicity
         &Validation::new(jsonwebtoken::Algorithm::ES256),
     )
-        .map_err(|e| AppleError::JwtError(e.to_string()))?;
+    .map_err(|e| AppleError::JwtError(e.to_string()))?;
 
     let claims = token.claims;
     let user = AppleUser {

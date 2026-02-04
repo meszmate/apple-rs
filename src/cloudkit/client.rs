@@ -1,12 +1,12 @@
-use crate::error::AppleError;
-use crate::signing::AppleKeyPair;
 use crate::cloudkit::error::parse_cloudkit_error;
 use crate::cloudkit::types::{DatabaseType, Environment};
-use base64::engine::general_purpose::STANDARD;
+use crate::error::AppleError;
+use crate::signing::AppleKeyPair;
 use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use reqwest::Client;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -45,21 +45,14 @@ impl CloudKitClient {
     pub(crate) fn build_url(&self, db: &DatabaseType, operation: &str) -> String {
         format!(
             "{}/database/1/{}/{}/{}/{}",
-            CLOUDKIT_BASE_URL,
-            self.config.container,
-            self.config.environment,
-            db,
-            operation,
+            CLOUDKIT_BASE_URL, self.config.container, self.config.environment, db, operation,
         )
     }
 
     pub(crate) fn build_base_url(&self, path: &str) -> String {
         format!(
             "{}/database/1/{}/{}/{}",
-            CLOUDKIT_BASE_URL,
-            self.config.container,
-            self.config.environment,
-            path,
+            CLOUDKIT_BASE_URL, self.config.container, self.config.environment, path,
         )
     }
 
@@ -84,9 +77,15 @@ impl CloudKitClient {
         let signature_b64 = STANDARD.encode(&signature);
 
         Ok(vec![
-            ("X-Apple-CloudKit-Request-KeyID".to_string(), self.config.key_pair.key_id().to_string()),
+            (
+                "X-Apple-CloudKit-Request-KeyID".to_string(),
+                self.config.key_pair.key_id().to_string(),
+            ),
             ("X-Apple-CloudKit-Request-ISO8601Date".to_string(), date),
-            ("X-Apple-CloudKit-Request-SignatureV1".to_string(), signature_b64),
+            (
+                "X-Apple-CloudKit-Request-SignatureV1".to_string(),
+                signature_b64,
+            ),
         ])
     }
 
@@ -99,13 +98,14 @@ impl CloudKitClient {
         url: &str,
         body: &Req,
     ) -> Result<Res, AppleError> {
-        let body_str = serde_json::to_string(body)
-            .map_err(|e| AppleError::JsonError(e.to_string()))?;
+        let body_str =
+            serde_json::to_string(body).map_err(|e| AppleError::JsonError(e.to_string()))?;
 
         let subpath = Self::extract_subpath(url);
         let headers = self.sign_request(&body_str, subpath)?;
 
-        let mut request = self.http_client
+        let mut request = self
+            .http_client
             .post(url)
             .header("Content-Type", "application/json");
 
@@ -120,15 +120,16 @@ impl CloudKitClient {
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         let status = res.status();
-        let response_body = res.text().await
+        let response_body = res
+            .text()
+            .await
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         if !status.is_success() {
             return Err(parse_cloudkit_error(&response_body));
         }
 
-        serde_json::from_str(&response_body)
-            .map_err(|e| AppleError::JsonError(e.to_string()))
+        serde_json::from_str(&response_body).map_err(|e| AppleError::JsonError(e.to_string()))
     }
 
     #[allow(dead_code)]
@@ -151,14 +152,15 @@ impl CloudKitClient {
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         let status = res.status();
-        let response_body = res.text().await
+        let response_body = res
+            .text()
+            .await
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         if !status.is_success() {
             return Err(parse_cloudkit_error(&response_body));
         }
 
-        serde_json::from_str(&response_body)
-            .map_err(|e| AppleError::JsonError(e.to_string()))
+        serde_json::from_str(&response_body).map_err(|e| AppleError::JsonError(e.to_string()))
     }
 }

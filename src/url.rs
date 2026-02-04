@@ -51,8 +51,14 @@ pub fn authorize_url(cfg: AuthorizeURLConfig) -> String {
     let mut url = Url::parse("https://appleid.apple.com/auth/authorize").unwrap();
     let mut query = url.query_pairs_mut();
 
-    query.append_pair("response_type", &cfg.response_type.unwrap_or_default().to_string());
-    query.append_pair("response_mode", &cfg.response_mode.unwrap_or_default().to_string());
+    query.append_pair(
+        "response_type",
+        &cfg.response_type.unwrap_or_default().to_string(),
+    );
+    query.append_pair(
+        "response_mode",
+        &cfg.response_mode.unwrap_or_default().to_string(),
+    );
     query.append_pair("client_id", &cfg.client_id);
     query.append_pair("redirect_uri", &cfg.redirect_uri);
 

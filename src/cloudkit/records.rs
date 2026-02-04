@@ -99,7 +99,11 @@ impl CloudKitClient {
         record: Record,
     ) -> Result<Record, AppleError> {
         let url = self.build_url(db, "records/modify");
-        let fields = if record.fields.is_empty() { None } else { Some(record.fields) };
+        let fields = if record.fields.is_empty() {
+            None
+        } else {
+            Some(record.fields)
+        };
         let request = ModifyRecordsRequest {
             operations: vec![RecordOperation {
                 operation_type: OperationType::Create,
@@ -115,16 +119,21 @@ impl CloudKitClient {
         };
 
         let response: ModifyRecordsResponse = self.signed_post(&url, &request).await?;
-        let result = response.records.into_iter().next()
+        let result = response
+            .records
+            .into_iter()
+            .next()
             .ok_or_else(|| AppleError::JsonError("Empty response from CloudKit".to_string()))?;
 
         if let Some(ref err_code) = result.server_error_code {
-            return Err(AppleError::CloudKitError(crate::error::CloudKitErrorResponse {
-                server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
-                reason: result.reason.unwrap_or_default(),
-                uuid: None,
-                retry_after: None,
-            }));
+            return Err(AppleError::CloudKitError(
+                crate::error::CloudKitErrorResponse {
+                    server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
+                    reason: result.reason.unwrap_or_default(),
+                    uuid: None,
+                    retry_after: None,
+                },
+            ));
         }
 
         Ok(Record {
@@ -144,7 +153,11 @@ impl CloudKitClient {
         record: Record,
     ) -> Result<Record, AppleError> {
         let url = self.build_url(db, "records/modify");
-        let fields = if record.fields.is_empty() { None } else { Some(record.fields) };
+        let fields = if record.fields.is_empty() {
+            None
+        } else {
+            Some(record.fields)
+        };
         let request = ModifyRecordsRequest {
             operations: vec![RecordOperation {
                 operation_type: OperationType::Update,
@@ -160,16 +173,21 @@ impl CloudKitClient {
         };
 
         let response: ModifyRecordsResponse = self.signed_post(&url, &request).await?;
-        let result = response.records.into_iter().next()
+        let result = response
+            .records
+            .into_iter()
+            .next()
             .ok_or_else(|| AppleError::JsonError("Empty response from CloudKit".to_string()))?;
 
         if let Some(ref err_code) = result.server_error_code {
-            return Err(AppleError::CloudKitError(crate::error::CloudKitErrorResponse {
-                server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
-                reason: result.reason.unwrap_or_default(),
-                uuid: None,
-                retry_after: None,
-            }));
+            return Err(AppleError::CloudKitError(
+                crate::error::CloudKitErrorResponse {
+                    server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
+                    reason: result.reason.unwrap_or_default(),
+                    uuid: None,
+                    retry_after: None,
+                },
+            ));
         }
 
         Ok(Record {
@@ -209,12 +227,14 @@ impl CloudKitClient {
         if let Some(result) = response.records.into_iter().next()
             && let Some(ref err_code) = result.server_error_code
         {
-            return Err(AppleError::CloudKitError(crate::error::CloudKitErrorResponse {
-                server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
-                reason: result.reason.unwrap_or_default(),
-                uuid: None,
-                retry_after: None,
-            }));
+            return Err(AppleError::CloudKitError(
+                crate::error::CloudKitErrorResponse {
+                    server_error_code: crate::error::CloudKitErrorCode::parse(err_code),
+                    reason: result.reason.unwrap_or_default(),
+                    uuid: None,
+                    retry_after: None,
+                },
+            ));
         }
 
         Ok(())
@@ -250,23 +270,30 @@ impl CloudKitClient {
     ) -> Result<Vec<Record>, AppleError> {
         let url = self.build_url(db, "records/lookup");
         let request = LookupRecordsRequest {
-            records: record_names.iter().map(|name| RecordLookup {
-                record_name: name.to_string(),
-            }).collect(),
+            records: record_names
+                .iter()
+                .map(|name| RecordLookup {
+                    record_name: name.to_string(),
+                })
+                .collect(),
             zone_id,
             desired_keys,
         };
 
         let response: ModifyRecordsResponse = self.signed_post(&url, &request).await?;
-        Ok(response.records.into_iter().map(|r| Record {
-            record_name: r.record_name,
-            record_type: r.record_type.unwrap_or_default(),
-            record_change_tag: r.record_change_tag,
-            fields: r.fields,
-            zone_id: r.zone_id,
-            created: r.created,
-            modified: r.modified,
-        }).collect())
+        Ok(response
+            .records
+            .into_iter()
+            .map(|r| Record {
+                record_name: r.record_name,
+                record_type: r.record_type.unwrap_or_default(),
+                record_change_tag: r.record_change_tag,
+                fields: r.fields,
+                zone_id: r.zone_id,
+                created: r.created,
+                modified: r.modified,
+            })
+            .collect())
     }
 
     pub async fn modify_records(
@@ -277,18 +304,25 @@ impl CloudKitClient {
         atomic: Option<bool>,
     ) -> Result<Vec<RecordResult>, AppleError> {
         let url = self.build_url(db, "records/modify");
-        let ops: Vec<RecordOperation> = operations.into_iter().map(|(op_type, record)| {
-            let fields = if record.fields.is_empty() { None } else { Some(record.fields) };
-            RecordOperation {
-                operation_type: op_type,
-                record: RecordBody {
-                    record_name: record.record_name,
-                    record_type: Some(record.record_type),
-                    record_change_tag: record.record_change_tag,
-                    fields,
-                },
-            }
-        }).collect();
+        let ops: Vec<RecordOperation> = operations
+            .into_iter()
+            .map(|(op_type, record)| {
+                let fields = if record.fields.is_empty() {
+                    None
+                } else {
+                    Some(record.fields)
+                };
+                RecordOperation {
+                    operation_type: op_type,
+                    record: RecordBody {
+                        record_name: record.record_name,
+                        record_type: Some(record.record_type),
+                        record_change_tag: record.record_change_tag,
+                        fields,
+                    },
+                }
+            })
+            .collect();
 
         let request = ModifyRecordsRequest {
             operations: ops,

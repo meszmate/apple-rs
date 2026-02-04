@@ -9,14 +9,20 @@ mod cloudkit_error_tests {
     fn test_cloudkit_error_code_roundtrip() {
         let codes = vec![
             ("BAD_REQUEST", CloudKitErrorCode::BadRequest),
-            ("AUTHENTICATION_FAILED", CloudKitErrorCode::AuthenticationFailed),
+            (
+                "AUTHENTICATION_FAILED",
+                CloudKitErrorCode::AuthenticationFailed,
+            ),
             ("ACCESS_DENIED", CloudKitErrorCode::AccessDenied),
             ("NOT_FOUND", CloudKitErrorCode::NotFound),
             ("ZONE_NOT_FOUND", CloudKitErrorCode::ZoneNotFound),
             ("CONFLICT", CloudKitErrorCode::Conflict),
             ("EXISTS", CloudKitErrorCode::Exists),
             ("QUOTA_EXCEEDED", CloudKitErrorCode::QuotaExceeded),
-            ("AUTHENTICATION_REQUIRED", CloudKitErrorCode::AuthenticationRequired),
+            (
+                "AUTHENTICATION_REQUIRED",
+                CloudKitErrorCode::AuthenticationRequired,
+            ),
             ("THROTTLED", CloudKitErrorCode::Throttled),
             ("INTERNAL_ERROR", CloudKitErrorCode::InternalError),
             ("TRY_AGAIN_LATER", CloudKitErrorCode::TryAgainLater),

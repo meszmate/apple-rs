@@ -1,7 +1,7 @@
+use crate::TokenResponse;
 use crate::error::*;
 use crate::signing::AppleKeyPair;
-use crate::TokenResponse;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{EncodingKey, Header, encode};
 use p256::pkcs8::EncodePrivateKey;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -17,13 +17,19 @@ struct AppleErrorResponseBody {
 }
 
 pub trait AppleAuth {
-    fn validate_code(&self, code: &str) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
+    fn validate_code(
+        &self,
+        code: &str,
+    ) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
     fn validate_code_with_redirect_uri(
         &self,
         code: &str,
         redirect_uri: &str,
     ) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
-    fn validate_refresh_token(&self, refresh_token: &str) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
+    fn validate_refresh_token(
+        &self,
+        refresh_token: &str,
+    ) -> impl std::future::Future<Output = Result<TokenResponse, AppleError>> + Send;
 }
 
 pub struct AppleAuthImpl {
@@ -34,7 +40,12 @@ pub struct AppleAuthImpl {
 }
 
 impl AppleAuthImpl {
-    pub fn new(app_id: &str, team_id: &str, key_id: &str, key_path: &str) -> Result<Self, AppleError> {
+    pub fn new(
+        app_id: &str,
+        team_id: &str,
+        key_id: &str,
+        key_path: &str,
+    ) -> Result<Self, AppleError> {
         let key_pair = AppleKeyPair::from_file(key_id, key_path)?;
         Ok(AppleAuthImpl {
             app_id: app_id.to_string(),
@@ -47,7 +58,12 @@ impl AppleAuthImpl {
         })
     }
 
-    pub fn new_b64(app_id: &str, team_id: &str, key_id: &str, b64: &str) -> Result<Self, AppleError> {
+    pub fn new_b64(
+        app_id: &str,
+        team_id: &str,
+        key_id: &str,
+        b64: &str,
+    ) -> Result<Self, AppleError> {
         let key_pair = AppleKeyPair::from_base64(key_id, b64)?;
         Ok(AppleAuthImpl {
             app_id: app_id.to_string(),
@@ -60,7 +76,11 @@ impl AppleAuthImpl {
         })
     }
 
-    pub fn from_key_pair(app_id: &str, team_id: &str, key_pair: Arc<AppleKeyPair>) -> Result<Self, AppleError> {
+    pub fn from_key_pair(
+        app_id: &str,
+        team_id: &str,
+        key_pair: Arc<AppleKeyPair>,
+    ) -> Result<Self, AppleError> {
         Ok(AppleAuthImpl {
             app_id: app_id.to_string(),
             team_id: team_id.to_string(),
@@ -93,14 +113,13 @@ impl AppleAuthImpl {
         let mut header = Header::new(jsonwebtoken::Algorithm::ES256);
         header.kid = Some(self.key_pair.key_id().to_string());
 
-        let der = self.key_pair.signing_key().to_pkcs8_der()
+        let der = self
+            .key_pair
+            .signing_key()
+            .to_pkcs8_der()
             .map_err(|e: p256::pkcs8::Error| AppleError::KeyParseError(e.to_string()))?;
 
-        let token = encode(
-            &header,
-            &claims,
-            &EncodingKey::from_ec_der(der.as_bytes()),
-        )
+        let token = encode(&header, &claims, &EncodingKey::from_ec_der(der.as_bytes()))
             .map_err(|e| AppleError::JwtError(e.to_string()))?;
 
         Ok(token)
@@ -170,7 +189,10 @@ impl AppleAuth for AppleAuthImpl {
         self.validate_request(form_query).await
     }
 
-    async fn validate_refresh_token(&self, refresh_token: &str) -> Result<TokenResponse, AppleError> {
+    async fn validate_refresh_token(
+        &self,
+        refresh_token: &str,
+    ) -> Result<TokenResponse, AppleError> {
         let client_secret = self.client_secret()?;
         let form_query = vec![
             ("client_id", self.app_id.as_str()),

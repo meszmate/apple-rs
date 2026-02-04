@@ -233,11 +233,20 @@ pub struct Subscription {
     pub query: Option<super::query::Query>,
     #[serde(rename = "firesOn", skip_serializing_if = "Option::is_none")]
     pub fires_on: Option<Vec<FiresOn>>,
-    #[serde(rename = "firesOnRecordCreation", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "firesOnRecordCreation",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub fires_on_record_creation: Option<bool>,
-    #[serde(rename = "firesOnRecordUpdate", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "firesOnRecordUpdate",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub fires_on_record_update: Option<bool>,
-    #[serde(rename = "firesOnRecordDeletion", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "firesOnRecordDeletion",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub fires_on_record_deletion: Option<bool>,
     #[serde(rename = "notificationInfo", skip_serializing_if = "Option::is_none")]
     pub notification_info: Option<NotificationInfo>,
@@ -269,11 +278,20 @@ pub enum FiresOn {
 pub struct NotificationInfo {
     #[serde(rename = "alertBody", skip_serializing_if = "Option::is_none")]
     pub alert_body: Option<String>,
-    #[serde(rename = "alertLocalizationKey", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "alertLocalizationKey",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub alert_localization_key: Option<String>,
-    #[serde(rename = "alertLocalizationArgs", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "alertLocalizationArgs",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub alert_localization_args: Option<Vec<String>>,
-    #[serde(rename = "alertActionLocalizationKey", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "alertActionLocalizationKey",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub alert_action_localization_key: Option<String>,
     #[serde(rename = "alertLaunchImage", skip_serializing_if = "Option::is_none")]
     pub alert_launch_image: Option<String>,
@@ -281,8 +299,14 @@ pub struct NotificationInfo {
     pub sound_name: Option<String>,
     #[serde(rename = "shouldBadge", skip_serializing_if = "Option::is_none")]
     pub should_badge: Option<bool>,
-    #[serde(rename = "shouldSendContentAvailable", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "shouldSendContentAvailable",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub should_send_content_available: Option<bool>,
-    #[serde(rename = "shouldSendMutableContent", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "shouldSendMutableContent",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub should_send_mutable_content: Option<bool>,
 }

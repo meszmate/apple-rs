@@ -1,7 +1,7 @@
 use crate::error::AppleError;
-use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
-use p256::ecdsa::{signature::Signer, Signature, SigningKey};
+use base64::engine::general_purpose::STANDARD;
+use p256::ecdsa::{Signature, SigningKey, signature::Signer};
 use std::sync::Arc;
 
 /// A shared ECDSA P-256 key pair used for both Apple Sign-In (JWT signing)

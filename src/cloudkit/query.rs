@@ -99,8 +99,16 @@ impl QueryBuilder {
     pub fn build(self) -> Query {
         Query {
             record_type: self.record_type,
-            filter_by: if self.filters.is_empty() { None } else { Some(self.filters) },
-            sort_by: if self.sorts.is_empty() { None } else { Some(self.sorts) },
+            filter_by: if self.filters.is_empty() {
+                None
+            } else {
+                Some(self.filters)
+            },
+            sort_by: if self.sorts.is_empty() {
+                None
+            } else {
+                Some(self.sorts)
+            },
         }
     }
 }

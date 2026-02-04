@@ -1,8 +1,8 @@
 use crate::cloudkit::client::CloudKitClient;
 use crate::cloudkit::types::DatabaseType;
 use crate::error::AppleError;
-use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
+use base64::engine::general_purpose::STANDARD;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -70,7 +70,8 @@ impl CloudKitClient {
             STANDARD.encode(hasher.finalize())
         };
 
-        let res = self.http_client
+        let res = self
+            .http_client
             .post(upload_url)
             .header("Content-Type", "application/octet-stream")
             .body(data.to_vec())
@@ -79,7 +80,9 @@ impl CloudKitClient {
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         let status = res.status();
-        let response_body = res.text().await
+        let response_body = res
+            .text()
+            .await
             .map_err(|e| AppleError::HttpError(e.to_string()))?;
 
         if !status.is_success() {

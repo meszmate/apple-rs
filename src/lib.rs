@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-pub mod signing;
 pub mod error;
+pub mod signing;
 
 #[cfg(feature = "auth")]
 pub mod auth;

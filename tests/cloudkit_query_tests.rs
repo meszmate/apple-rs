@@ -13,7 +13,11 @@ mod cloudkit_query_tests {
     #[test]
     fn test_query_builder_with_filter() {
         let query = QueryBuilder::new("Item")
-            .filter("name", Comparator::Equals, FieldValue::String("test".into()))
+            .filter(
+                "name",
+                Comparator::Equals,
+                FieldValue::String("test".into()),
+            )
             .build();
 
         assert_eq!(query.record_type, "Item");
@@ -24,9 +28,7 @@ mod cloudkit_query_tests {
 
     #[test]
     fn test_query_builder_with_sort() {
-        let query = QueryBuilder::new("Item")
-            .sort("createdAt", false)
-            .build();
+        let query = QueryBuilder::new("Item").sort("createdAt", false).build();
 
         let sorts = query.sort_by.unwrap();
         assert_eq!(sorts.len(), 1);
@@ -37,7 +39,11 @@ mod cloudkit_query_tests {
     #[test]
     fn test_query_builder_multiple_filters_and_sorts() {
         let query = QueryBuilder::new("Product")
-            .filter("category", Comparator::Equals, FieldValue::String("electronics".into()))
+            .filter(
+                "category",
+                Comparator::Equals,
+                FieldValue::String("electronics".into()),
+            )
             .filter("price", Comparator::LessThan, FieldValue::Double(100.0))
             .sort("price", true)
             .sort("name", true)
@@ -57,7 +63,11 @@ mod cloudkit_query_tests {
     #[test]
     fn test_query_serde_roundtrip() {
         let query = QueryBuilder::new("Task")
-            .filter("status", Comparator::Equals, FieldValue::String("active".into()))
+            .filter(
+                "status",
+                Comparator::Equals,
+                FieldValue::String("active".into()),
+            )
             .sort("priority", false)
             .build();
 

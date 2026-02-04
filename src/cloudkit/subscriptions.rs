@@ -40,7 +40,10 @@ impl CloudKitClient {
         };
 
         let response: ModifySubscriptionsResponse = self.signed_post(&url, &request).await?;
-        response.subscriptions.into_iter().next()
+        response
+            .subscriptions
+            .into_iter()
+            .next()
             .ok_or_else(|| AppleError::JsonError("Empty subscription response".to_string()))
     }
 

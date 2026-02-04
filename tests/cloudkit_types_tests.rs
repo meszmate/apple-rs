@@ -45,8 +45,7 @@ mod cloudkit_types_tests {
 
     #[test]
     fn test_record_builder_with_zone() {
-        let record = Record::new("Note")
-            .with_zone(ZoneID::new("NotesZone"));
+        let record = Record::new("Note").with_zone(ZoneID::new("NotesZone"));
 
         assert_eq!(record.zone_id.as_ref().unwrap().zone_name, "NotesZone");
     }
