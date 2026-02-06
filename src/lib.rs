@@ -13,6 +13,9 @@ pub mod user;
 #[cfg(feature = "cloudkit")]
 pub mod cloudkit;
 
+#[cfg(feature = "appstore")]
+pub mod appstore;
+
 #[derive(Serialize, Deserialize)]
 pub struct TokenResponse {
     pub access_token: String,

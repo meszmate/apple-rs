@@ -243,6 +243,13 @@ mod cloudkit_types_tests {
             should_badge: Some(true),
             should_send_content_available: None,
             should_send_mutable_content: None,
+            collapse_id_key: None,
+            desired_keys: None,
+            category: None,
+            title_localization_key: None,
+            title_localization_args: None,
+            subtitle_localization_key: None,
+            subtitle_localization_args: None,
         };
         let json = serde_json::to_string(&info).unwrap();
         assert!(json.contains("\"alertBody\":\"hello\""));

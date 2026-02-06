@@ -309,4 +309,30 @@ pub struct NotificationInfo {
         skip_serializing_if = "Option::is_none"
     )]
     pub should_send_mutable_content: Option<bool>,
+    #[serde(rename = "collapseIdKey", skip_serializing_if = "Option::is_none")]
+    pub collapse_id_key: Option<String>,
+    #[serde(rename = "desiredKeys", skip_serializing_if = "Option::is_none")]
+    pub desired_keys: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+    #[serde(
+        rename = "titleLocalizationKey",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub title_localization_key: Option<String>,
+    #[serde(
+        rename = "titleLocalizationArgs",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub title_localization_args: Option<Vec<String>>,
+    #[serde(
+        rename = "subtitleLocalizationKey",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub subtitle_localization_key: Option<String>,
+    #[serde(
+        rename = "subtitleLocalizationArgs",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub subtitle_localization_args: Option<Vec<String>>,
 }

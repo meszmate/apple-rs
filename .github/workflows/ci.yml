@@ -30,6 +30,7 @@ jobs:
           - "--no-default-features"
           - "--no-default-features --features auth"
           - "--no-default-features --features cloudkit"
+          - "--no-default-features --features appstore"
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -49,6 +50,7 @@ jobs:
           - "--no-default-features"
           - "--no-default-features --features auth"
           - "--no-default-features --features cloudkit"
+          - "--no-default-features --features appstore"
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -66,3 +68,4 @@ jobs:
       - run: cargo check --no-default-features
       - run: cargo check --no-default-features --features auth
       - run: cargo check --no-default-features --features cloudkit
+      - run: cargo check --no-default-features --features appstore

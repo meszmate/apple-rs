@@ -16,6 +16,10 @@ pub enum AppleError {
     CloudKitError(CloudKitErrorResponse),
     #[cfg(feature = "cloudkit")]
     SignatureError(String),
+    #[cfg(feature = "appstore")]
+    AppStoreError(AppStoreErrorResponse),
+    #[cfg(feature = "appstore")]
+    CertificateError(String),
 }
 
 #[derive(Debug, Clone)]
@@ -146,6 +150,24 @@ impl fmt::Display for CloudKitErrorResponse {
     }
 }
 
+#[cfg(feature = "appstore")]
+#[derive(Debug, Clone)]
+pub struct AppStoreErrorResponse {
+    pub error_code: i64,
+    pub error_message: String,
+}
+
+#[cfg(feature = "appstore")]
+impl fmt::Display for AppStoreErrorResponse {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "App Store error {}: {}",
+            self.error_code, self.error_message
+        )
+    }
+}
+
 impl fmt::Display for ErrorResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}: {}", self.error_type, self.message)
@@ -182,6 +204,10 @@ impl fmt::Display for AppleError {
             AppleError::CloudKitError(err) => write!(f, "{}", err),
             #[cfg(feature = "cloudkit")]
             AppleError::SignatureError(msg) => write!(f, "Signature error: {}", msg),
+            #[cfg(feature = "appstore")]
+            AppleError::AppStoreError(err) => write!(f, "{}", err),
+            #[cfg(feature = "appstore")]
+            AppleError::CertificateError(msg) => write!(f, "Certificate error: {}", msg),
         }
     }
 }
