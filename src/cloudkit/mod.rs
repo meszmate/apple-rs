@@ -2,6 +2,7 @@ pub mod assets;
 pub mod changes;
 pub mod client;
 pub(crate) mod error;
+pub mod notifications;
 pub mod query;
 pub mod records;
 pub mod subscriptions;
@@ -13,6 +14,10 @@ pub mod zones;
 pub use assets::{AssetTokenInfo, AssetUploadResponse, AssetUploadResult};
 pub use changes::{DatabaseChangesResponse, ZoneChangeInfo, ZoneChangesResponse};
 pub use client::{CloudKitClient, CloudKitConfig};
+pub use notifications::{
+    APNsCloudKitPayload, CKDatabaseNotification, CKNotification, CKQueryNotification,
+    CKRecordZoneNotification, DatabaseScope, QueryNotificationReason,
+};
 pub use query::{Comparator, Filter, Query, QueryBuilder, SortDescriptor};
 pub use records::{ModifyRecordsResponse, QueryResponse, RecordResult};
 pub use subscriptions::{ListSubscriptionsResponse, ModifySubscriptionsResponse};
